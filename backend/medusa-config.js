@@ -19,7 +19,6 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
-  // Uncomment to add Stripe support.
   // You can create a Stripe account via: https://stripe.com
   {
     resolve: `medusa-payment-stripe`,
@@ -33,11 +32,14 @@ const plugins = [
 module.exports = {
   projectConfig: {
     redis_url: REDIS_URL,
-    // For more production-like environment install PostgresQL
     database_url: DATABASE_URL,
     database_type: "postgres",
     store_cors: STORE_CORS,
     admin_cors: ADMIN_CORS,
+    database_extra:
+      process.env.NODE_ENV !== "development"
+        ? { ssl: { rejectUnauthorized: false } }
+        : {},
   },
   plugins,
 };
